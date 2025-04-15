@@ -1,105 +1,68 @@
-def create_prompt(repo: str, issue_text: str, code_context: str = None) -> str:
-    """Create a structured prompt for the LLM."""
+import os
+from typing import Optional
 
-    prompt = f"""You are an AI coding assistant. A GitHub issue is reported for the repository {repo}.
-
-        Issue Description:
-        \"\"\"
-        {issue_text}
-        \"\"\"
-        """
-            
-            # Add code context if provided
-    if code_context:
-        prompt += f"""\n\nRelevant Code Context:
-        \"\"\"
-        {code_context}
-        \"\"\"
-        """
-        
-    # Add labeled examples
-    prompt += f"""\n\nThe response should be a valid unified diff patch. Follow the structure and style shown in the example patches below. without any additional text.
-        \"\"\"
-        correct response Example 1:
-        diff --git a/utils.py b/utils.py
-        --- a/utils.py
-        +++ b/utils.py
-        @@ def normalize(data):
-        -    return (data - data.min()) / data.max()
-        +    return (data - data.min()) / (data.max() - data.min())
-        \"\"\"
-        \"\"\"
-        correct response Example 2:
-        diff --git a/downloader.py b/downloader.py
-        --- a/downloader.py
-        +++ b/downloader.py
-        @@ def download_file(url):
-        -    response = requests.get(url)
-        -    return response.content
-        +    try:
-        +        response = requests.get(url, timeout=5)
-        +        response.raise_for_status()
-        +        return response.content
-        +    except requests.RequestException as e:
-        +        print(f"Download failed")
-        +        return None
-        \"\"\"
-
-
-        \"\"\"
-        correct response Example 3:
-        diff --git a/train.py b/train.py
-        --- a/train.py
-        +++ b/train.py
-        @@ def train_model(data):
-        -    for d in data:
-        -        result = process(d)
-        +    for sample in data:
-        +        result = process(sample)
-        \"\"\"
-
-
-        \"\"\"
-        incorrect response Example 1:
-        Here is the patch that fixes the issue:
-        diff --git a/utils.py b/utils.py
-        --- a/utils.py
-        +++ b/utils.py
-        @@ def normalize(data):
-        -    return (data - data.min()) / data.max()
-        \"\"\"
-        
-        \"\"\"
-        incorrect response Example 2:
-        Here is the fix for your code examples as an Unified Diff (UdD):
-        ```diff
-        --- a/utils.py
-        +++ b/utils.py
-        @@ -1 +1 @@ 
-        -return data / max_data;
-        +return ((data * min_max) - min_val) / range_;
-        --- a/downloader.py
-        +++ b/downloader.py
-        \"\"\"        
-        
-        \"\"\"
-        incorrect response Example 3:
-        The patch that fixes the issue is:
-        diff --git a/train.py b/train.py
-        --- a/train.py
-        +++ b/train.py
-        @@ def train_model(data):
-        -    for d in data:
-        -        result = process(d)
-        \"\"\"
-        """
-
-    prompt += f"""\n\nProvide a fix as a valid unified diff patch.
-        \"\"\"
-        - IMPORTANT: Output only a valid unified diff.
-        - DO NOT include any explanation, markdown formatting, or extra text.
-        - The diff must exactly match the file context; do not alter context lines.
-        \"\"\"
-        """
+def create_prompt(repo_path: str, target_file: str, issue_description: str, context: str = None) -> str:
+    """Create a prompt for file generation based on the issue description and context."""
+    # Get the file extension to determine the language
+    file_ext = os.path.splitext(target_file)[1].lower()
     
-    return prompt
+    # Map file extensions to languages
+    language_map = {
+        '.py': 'Python',
+        '.js': 'JavaScript',
+        '.ts': 'TypeScript',
+        '.java': 'Java',
+        '.cpp': 'C++',
+        '.c': 'C',
+        '.go': 'Go',
+        '.rb': 'Ruby',
+        '.php': 'PHP',
+        '.rs': 'Rust',
+        '.swift': 'Swift',
+        '.kt': 'Kotlin',
+        '.scala': 'Scala',
+        '.sh': 'Shell',
+        '.md': 'Markdown',
+        '.html': 'HTML',
+        '.css': 'CSS',
+        '.json': 'JSON',
+        '.yaml': 'YAML',
+        '.yml': 'YAML',
+        '.xml': 'XML',
+        '.sql': 'SQL',
+        '.dockerfile': 'Dockerfile',
+        '.dockerignore': 'Dockerignore',
+        '.gitignore': 'Gitignore',
+        '.env': 'Environment Variables',
+        '.ini': 'INI',
+        '.toml': 'TOML',
+        '.csv': 'CSV',
+        '.txt': 'Text',
+    }
+    
+    language = language_map.get(file_ext, 'Unknown')
+    
+    # Incorporate Context into the prompt
+    context_section = ""
+    if context:
+        context_section = f"""
+Relevant Code Context:
+--- START CONTEXT ---
+{context}
+--- END CONTEXT ---
+"""
+    
+    # Create the prompt, including the context section if available
+    prompt = f"""You are a professional software developer. Your task is to generate a complete {language} file based on the following requirements and context:
+
+File: {target_file}
+Language: {language}
+{context_section}
+Requirements:
+{issue_description}
+
+Please generate the complete file content. Use the provided Code Context for reference if necessary. Include all necessary imports, dependencies, and code structure. The code should be well-formatted, documented, and follow best practices for {language} development.
+
+Return only the complete file content, without any additional explanations or markdown formatting."""
+
+    return prompt.strip() # Use strip() to remove leading/trailing whitespace

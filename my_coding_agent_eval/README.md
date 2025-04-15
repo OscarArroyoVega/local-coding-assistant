@@ -158,3 +158,18 @@ my_coding_agent_eval/
 ├── swe_eval_runner.py     # Main script to run the agent
 ├── requirements.txt
 └── README.md
+
+
+
+# CONTINUAR DESDE AQUÍ. 15 04 2025    (we have the diff!!!!)
+
+#### problem: DOCKER image build failed. 
+
+#### no need to pass the tests, no need to build the solved repo.
+
+2 check the format output required 
+3 output the format from the diff
+4 loop for all the examples 
+5 pass the test in swe-bench
+
+
