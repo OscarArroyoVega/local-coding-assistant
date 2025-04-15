@@ -1,0 +1,25 @@
+[project]
+name = "my-coding-agent-eval"
+version = "0.1.0"
+dependencies = [
+    "datasets>=3.2.0",
+    "loguru>=0.7.3",
+    "ollama>=0.4.7",
+    "pandas>=2.2.3",
+    "pyarrow>=19.0.0",
+    "pydantic>=2.11.3",
+    "pydantic-settings>=2.8.1",
+    "swebench",
+]
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["agent"]
+
+[tool.uv]
+
+[tool.uv.sources]
+swebench = { git = "https://github.com/princeton-nlp/SWE-bench.git" }

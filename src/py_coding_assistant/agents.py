@@ -20,6 +20,9 @@ class Agent(ABC):
 
     @abstractmethod
     def generate_response(self, prompt: str) -> str:
+        """
+        Generates a response to the given prompt.
+        """
         pass
 
 

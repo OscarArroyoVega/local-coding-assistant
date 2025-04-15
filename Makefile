@@ -9,7 +9,7 @@ cli-with-qwen:
 		--source-code-path ./src/py_coding_assistant \
 		--agent-type single-llm \
 		--llm-provider ollama \
-		--llm-model qwen2.5-coder:7b-instruct
+		--llm-model qwen2.5-coder:7b-instruct # qwen2.5-coder:7b-instruct, qwen2.5-coder:14b-instruct
 
 cli-with-claude:
 	uv run python cli.py \
