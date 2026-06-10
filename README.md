@@ -1,3 +1,5 @@
+> ⏸️ This repo is not actively maintained at the moment. Kept for reference.
+
 # Let's build a coding assistant with LLMs
 
 ## The problem
