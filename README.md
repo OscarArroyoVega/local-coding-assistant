@@ -1,8 +1,8 @@
 > ⏸️ This repo is not actively maintained at the moment. Kept for reference.
 
-# Let's build a coding assistant with LLMs
+## Let's build a coding assistant with LLMs
 
-## The problem
+#### The problem
 Coding assistants like Github Copilot or Cursor are great. However, they have one small problem:
 
 As you use them, your source code and any data embedded in it is constantly sent to the LLM provider. Which ultimately means that your data becomes THEIR training data.
